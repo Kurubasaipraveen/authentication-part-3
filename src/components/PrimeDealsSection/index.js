@@ -5,9 +5,17 @@ import Loader from 'react-loader-spinner'
 import ProductCard from '../ProductCard'
 import './index.css'
 
+const apiStatusConstants={
+  intital:"INITAL",
+  success:"SUCCESS",
+  failure:"FAILURE",
+  inprogress:"IN_PROGRESS",
+}
+
 class PrimeDealsSection extends Component {
   state = {
     primeDeals: [],
+    apistatus: apiStatusConstants.intital,
   }
 
   componentDidMount() {
@@ -15,6 +23,9 @@ class PrimeDealsSection extends Component {
   }
 
   getPrimeDeals = async () => {
+    this.setState({
+      apistatus:apiStatusConstants.inprogress,
+    })
     const jwtToken = Cookies.get('jwt_token')
 
     const apiUrl = 'https://apis.ccbp.in/prime-deals'
@@ -37,6 +48,11 @@ class PrimeDealsSection extends Component {
       }))
       this.setState({
         primeDeals: updatedData,
+        apistatus:apiStatusConstants.success,
+      })
+    }else if (response.status===401) {
+      this.setState({
+        apistatus:apiStatusConstants.failure,
       })
     }
   }
@@ -70,7 +86,17 @@ class PrimeDealsSection extends Component {
   )
 
   render() {
-    return this.renderPrimeDealsList()
+    const {apistatus} = this.state
+    switch (apistatus) {
+      case apiStatusConstants.success:
+        return this.renderPrimeDealsList()
+      case apiStatusConstants.failure:
+        return this.renderPrimeDealsFailureView()
+      case apiStatusConstants.inprogress:
+        return this.renderLoadingView()
+      default:
+        return null
+    }
   }
 }
 

@@ -7,3 +7,4 @@
   - Handle Failure View
   - Handle Loading View
 # authentication-part-3
+# nxt-trendz-authentication-part-4-
